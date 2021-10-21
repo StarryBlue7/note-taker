@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const { v4: uuid } = require('uuid');
-const { readAndAppend, readFromFile } = require('./helpers/fsUtils');
+const { readAndAppend, readFromFile, writeToFile } = require('./helpers/fsUtils');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -31,9 +31,10 @@ app.post('/api/notes', (req, res) => {
 
     const newNote = {
         'title': req.body.title,
-        'text': req.body.text
+        'text': req.body.text,
+        'id': uuid()
     }
-    
+
     if (newNote.title) {
         readAndAppend(newNote, './db/db.json');
         res.json('Note added!');
@@ -44,8 +45,17 @@ app.post('/api/notes', (req, res) => {
 });
 
 app.delete('/api/notes/:id', (req, res) => {
-    res.json(`${req.method} request received to delete note id:${req.params.id}`);
-    console.info(`${req.method} request received to delete note id:${req.params.id}`);
+    const id = req.params.id;
+    console.info(`${req.method} request received to delete note id: ${id}`);
+
+    readFromFile('./db/db.json')
+        .then((db) => JSON.parse(db))
+        .then((json) => {
+            const newDB = json.filter((note) => note.id !== id);
+            writeToFile('./db/db.json', newDB);
+
+            res.json(`Deleted note id: ${id}`);
+    });
 });
 
 app.get('*', (req, res) => {
