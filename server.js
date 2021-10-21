@@ -21,15 +21,26 @@ app.get('/api/notes', (req, res) => {
     console.info(`${req.method} request received to get notes`);
 
     readFromFile('./db/db.json').then((db) => {
-        console.log(typeof db);
         res.json(JSON.parse(db));
     }).catch(err => console.error(err));
 });
 
 app.post('/api/notes', (req, res) => {
-    res.json(`${req.method} request received to add note`);
     console.info(`${req.method} request received to add note`);
     console.log(req.body);
+
+    const newNote = {
+        'title': req.body.title,
+        'text': req.body.text
+    }
+    
+    if (newNote.title) {
+        readAndAppend(newNote, './db/db.json');
+        res.json('Note added!');
+    } else {
+        res.error('Note missing title!');
+    }
+    
 });
 
 app.delete('/api/notes/:id', (req, res) => {
