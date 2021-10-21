@@ -6,17 +6,17 @@ const { readAndAppend, readFromFile, writeToFile } = require('./helpers/fsUtils'
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-const db = require('./db/db.json');
-
 app.use(express.static('public'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Route for notes page
 app.get('/notes', (req, res) => {
     res.sendFile(path.join(__dirname, '/public/notes.html'));
 });
 
+// Route for getting note data
 app.get('/api/notes', (req, res) => {
     console.info(`${req.method} request received to get notes`);
 
@@ -25,6 +25,7 @@ app.get('/api/notes', (req, res) => {
     }).catch(err => console.error(err));
 });
 
+// Route for adding notes to db
 app.post('/api/notes', (req, res) => {
     console.info(`${req.method} request received to add note`);
     console.log(req.body);
@@ -41,9 +42,9 @@ app.post('/api/notes', (req, res) => {
     } else {
         res.error('Note missing title!');
     }
-    
 });
 
+// Route for deleting notes by id
 app.delete('/api/notes/:id', (req, res) => {
     const id = req.params.id;
     console.info(`${req.method} request received to delete note id: ${id}`);
@@ -58,6 +59,7 @@ app.delete('/api/notes/:id', (req, res) => {
     });
 });
 
+// Wildcard route to main page
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '/public/index.html'));
 });
