@@ -22,7 +22,7 @@ These instructions will get you a copy of the project up and running on your loc
 1. Clone repository.
 1. Navigate to `note-taker` directory in terminal.
 1. `npm install` dependencies for hosting locally.
-1. `npm start` 
+1. `npm start` to host locally at `http://localhost:3001/`.
 
 ### Deployment
 
