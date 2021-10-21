@@ -1,13 +1,12 @@
 const express = require('express');
 const path = require('path');
-const uuid = require('uuid');
-const util = require('util');
-const fs = require('fs');
-
-const db = require('./db/db.json');
+const { v4: uuid } = require('uuid');
+const { readAndAppend, readFromFile } = require('./helpers/fsUtils');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+const db = require('./db/db.json');
 
 app.use(express.static('public'));
 
@@ -19,17 +18,18 @@ app.get('/notes', (req, res) => {
 });
 
 app.get('/api/notes', (req, res) => {
-    res.json(`${req.method} request received to get notes`);
     console.info(`${req.method} request received to get notes`);
 
-
+    readFromFile('./db/db.json').then((db) => {
+        console.log(typeof db);
+        res.json(JSON.parse(db));
+    }).catch(err => console.error(err));
 });
 
 app.post('/api/notes', (req, res) => {
     res.json(`${req.method} request received to add note`);
     console.info(`${req.method} request received to add note`);
-
-    
+    console.log(req.body);
 });
 
 app.delete('/api/notes/:id', (req, res) => {
